@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Dex (日本語 & English)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #pokemon-info-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pokemon-info {
+            width: 45%;
+            text-align: left;
+        }
+
+        #pokemon-img {
+            margin-top: 20px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        async function fetchPokemonData(pokemonId = 1) {
+            try {
+                // Fetch general Pokémon data (English)
+                const pokemonResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+                const pokemon = await pokemonResponse.json();
+
+                // Fetch species data (Japanese name)
+                const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`);
+                const species = await speciesResponse.json();
+
+                // English Information
+                document.getElementById('pokemon-name-en').innerText = `Name (EN): ${pokemon.name}`;
+                document.getElementById('pokemon-height-en').innerText = `Height (EN): ${pokemon.height}`;
+                document.getElementById('pokemon-weight-en').innerText = `Weight (EN): ${pokemon.weight}`;
+                document.getElementById('pokemon-types-en').innerText = `Types (EN): ${pokemon.types.map(t => t.type.name).join(', ')}`;
+
+                // Japanese Information
+                const japaneseName = species.names.find(name => name.language.name === 'ja').name;
+                document.getElementById('pokemon-name-ja').innerText = `名前 (JP): ${japaneseName}`;
+                document.getElementById('pokemon-height-ja').innerText = `高さ (JP): ${pokemon.height}`;
+                document.getElementById('pokemon-weight-ja').innerText = `重さ (JP): ${pokemon.weight}`;
+                document.getElementById('pokemon-types-ja').innerText = `タイプ (JP): ${pokemon.types.map(t => t.type.name).join(', ')}`;
+
+                // Pokémon Image
+                document.getElementById('pokemon-img').src = pokemon.sprites.front_default;
+            } catch (error) {
+                console.error("Error fetching Pokémon data:", error);
+            }
+        }
+
+        function getRandomPokemonId() {
+            return Math.floor(Math.random() * 898) + 1; // PokeAPI supports 1-898 Pokémon IDs
+        }
+
+        function showRandomPokemon() {
+            const randomId = getRandomPokemonId();
+            fetchPokemonData(randomId);
+        }
+
+        window.onload = () => fetchPokemonData();
+    </script>
+</head>
+<body>
+    <h1>Pokémon Dex (日本語 & English)</h1>
+    <img id="pokemon-img" alt="Pokémon Image">
+    <div id="pokemon-info-container">
+        <!-- English Information -->
+        <div class="pokemon-info">
+            <h2>English Information</h2>
+            <p id="pokemon-name-en"></p>
+            <p id="pokemon-height-en"></p>
+            <p id="pokemon-weight-en"></p>
+            <p id="pokemon-types-en"></p>
+        </div>
+        <!-- Japanese Information -->
+        <div class="pokemon-info">
+            <h2>日本語情報</h2>
+            <p id="pokemon-name-ja"></p>
+            <p id="pokemon-height-ja"></p>
+            <p id="pokemon-weight-ja"></p>
+            <p id="pokemon-types-ja"></p>
+        </div>
+    </div>
+    <button onclick="showRandomPokemon()">Show Random Pokémon</button>
+</body>
+</html>
+
